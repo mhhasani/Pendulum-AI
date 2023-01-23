@@ -1,4 +1,4 @@
 # Pendulum-AI
 
     pip install -r requirements.txt
-    python -u Pendulum-qlearnings.py 
+    python -u Pendulum-qlearning.py 
