@@ -164,18 +164,17 @@ def test_and_make_gif():
 
 
 def show_statistics():
-    with open("statistics", 'rb') as filehandler:
-        aggr_ep_rewards = pickle.load(filehandler)
-    plt.plot(aggr_ep_rewards['ep'],
-             aggr_ep_rewards['avg'], label="average rewards")
-    plt.plot(aggr_ep_rewards['ep'],
-             aggr_ep_rewards['max'], label="max rewards")
-    plt.plot(aggr_ep_rewards['ep'],
-             aggr_ep_rewards['min'], label="min rewards")
-    plt.legend(loc=4)
-    plt.savefig(os.path.realpath(
-        os.path.join(ROOT_DIR, "Statistics.png")))
-    plt.show()
+    with open("statistics", 'wb') as filehandler:
+        pickle.dump(aggr_ep_rewards, filehandler)
+        plt.plot(aggr_ep_rewards['ep'],
+                 aggr_ep_rewards['avg'], label="average rewards")
+        plt.plot(aggr_ep_rewards['ep'],
+                 aggr_ep_rewards['max'], label="max rewards")
+        plt.plot(aggr_ep_rewards['ep'],
+                 aggr_ep_rewards['min'], label="min rewards")
+        plt.legend(loc=4)
+        plt.savefig(os.path.realpath(os.path.join(ROOT_DIR, "Statistics.png")))
+        plt.show()
 
 
 def main():
