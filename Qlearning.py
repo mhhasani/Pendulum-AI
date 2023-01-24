@@ -99,49 +99,30 @@ def q_learning():
         episode_reward = 0
         discrete_state = get_discrete_state(env.reset())
         done = False
-
         while not done:
-            if np.random.random() > epsilon:
-                # Get action from Q table
-                action = np.argmax(q_table[discrete_state])
-            else:
-                # Get random action
-                action = np.random.randint(0, DISCRETE_ACTION_SPACE_SIZE)
+            action = get_action(q_table, discrete_state, epsilon)
             torque = action_space[action]
             new_state, reward, done, _ = env.step(torque)
             episode_reward += reward
             new_discrete_state = get_discrete_state(new_state)
-
-            if not done:
-                max_future_q = np.max(q_table[new_discrete_state])
-                current_q = q_table[discrete_state + (action,)]
-                # And here's our equation for a new Q value for current state and action
-                new_q = (1 - LEARNING_RATE) * current_q + \
-                    LEARNING_RATE * (reward + DISCOUNT * max_future_q)
-
-                # Update Q table with new Q value
-                q_table[discrete_state + (action,)] = new_q
-
-            if new_state[0] == 0 and new_state[1] == 1:
-                q_table[discrete_state + (action,)] = 0
-                print(f"Acheived in {episode}")
-
+            q_table = update_qtable(
+                q_table, discrete_state, action, new_discrete_state, reward)
             discrete_state = new_discrete_state
-
-        # Decaying is being done every episode if episode number is within decaying range
-        if epsilon >= EPSILON_THRESHOLD:
-            epsilon *= epsilon_decay_value
+        epsilon *= epsilon_decay_value
+        epsilon = max(epsilon, EPSILON_THRESHOLD)
         ep_rewards.append(episode_reward)
         if not episode % STATS_EVERY:
-            average_reward = sum(ep_rewards[-STATS_EVERY:]) / STATS_EVERY
+            average_reward = sum(
+                ep_rewards[-STATS_EVERY:]) / STATS_EVERY
             aggr_ep_rewards['ep'].append(episode)
             aggr_ep_rewards['avg'].append(average_reward)
             aggr_ep_rewards['max'].append(max(ep_rewards[-STATS_EVERY:]))
             aggr_ep_rewards['min'].append(min(ep_rewards[-STATS_EVERY:]))
             print(
-                f'Episode: {episode:>5d}, average reward: {average_reward:>4.1f}, current epsilon: {epsilon:>1.3f}')
-        if episode % 10 == 0:
-            save_qtable(q_table)
+                f"Episode: {episode:>5d}, average reward: {average_reward:>4.1f}, current epsilon: {epsilon:>1.2f}")
+
+    save_qtable(q_table)
+    return q_table
 
 
 def test_and_make_gif():
@@ -183,6 +164,7 @@ def main():
         test_and_make_gif()
     else:
         q_learning()
+        test_and_make_gif()
         show_statistics()
 
 
