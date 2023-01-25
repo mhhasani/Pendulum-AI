@@ -6,15 +6,20 @@ import matplotlib.pyplot as plt
 import imageio
 
 
-# constants
+# path
 ROOT_DIR = os.path.dirname(__file__)
 Q_TABLE_PATH = os.path.realpath(os.path.join(ROOT_DIR, 'qtable.npy'))
+GIF_PATH = os.path.realpath(os.path.join(ROOT_DIR, 'test.gif'))
+STATISTIC_PATH = os.path.realpath(os.path.join(ROOT_DIR, 'Statistics.png'))
+
+# constants
 LEARNING_RATE = 0.4
 DISCOUNT = 0.95
 EPISODES = 20000
 epsilon = 1
 ACTION_SPACE_SIZE = 17
 OBSERVATION_SPACE_SIZE = [21, 21, 65]
+
 env = gym.make("Pendulum-v0")
 ep_rewards = []
 revards_log = {'ep': [], 'avg': [], 'max': [], 'min': []}
@@ -132,8 +137,7 @@ def test_and_make_gif():
 
     env.close()
     print("Saving gif...")
-    imageio.mimsave(os.path.realpath(
-        os.path.join(ROOT_DIR, 'test.gif')), images, fps=30)
+    imageio.mimsave(GIF_PATH, images, fps=30)
 
 
 def show_statistics():
@@ -147,7 +151,7 @@ def show_statistics():
         plt.plot(ep, max, label="max rewards")
         plt.plot(ep, min, label="min rewards")
         plt.legend(loc=4)
-        plt.savefig(os.path.realpath(os.path.join(ROOT_DIR, "Statistics.png")))
+        plt.savefig(STATISTIC_PATH)
         plt.show()
 
 
