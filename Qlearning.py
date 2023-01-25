@@ -104,8 +104,7 @@ def q_learning():
 def log(episode, episode_reward, test=False):
     ep_rewards.append(episode_reward)
     if not episode % 100 or test:
-        average_reward = sum(
-            ep_rewards[-100:]) / 100
+        average_reward = sum(ep_rewards[-100:]) / 100
         revards_log['ep'].append(episode)
         revards_log['avg'].append(average_reward)
         revards_log['max'].append(max(ep_rewards[-100:]))
