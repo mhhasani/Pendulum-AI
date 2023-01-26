@@ -121,23 +121,31 @@ def log(episode, episode_reward, test=False):
 def test_and_make_gif():
     q_table = create_qtable()
     action_space = make_action_space()
+    chart_data_time = []
+    chart_data_reward = []
+    chart_data_action = []
     images = []
-    for i in range(5):
+    for episode in range(1):
         episode_reward = 0
         state = get_discrete_state(env.reset())
         done = False
         while not done:
-            action = np.argmax(q_table[state])
+            action = get_action(q_table, state, 0)
             torque = action_space[action]
             new_state, reward, done, _ = env.step(torque)
             episode_reward += reward
-            state = get_discrete_state(new_state)
+            new_state = get_discrete_state(new_state)
+            state = new_state
             images.append(env.render(mode='rgb_array'))
-        log(i, episode_reward, test=True)
+            chart_data_time.append(action)
+            chart_data_reward.append(reward)
+            chart_data_action.append(torque)
+        log(episode, episode_reward, True)
 
     env.close()
-    print("Saving gif...")
-    imageio.mimsave(GIF_PATH, images, fps=30)
+    print("Making gif...")
+    imageio.mimsave(GIF_PATH, images)
+    draw_3D_chart(chart_data_time, chart_data_reward, chart_data_action)
 
 
 def show_statistics():
@@ -153,6 +161,19 @@ def show_statistics():
         plt.legend(loc=4)
         plt.savefig(STATISTIC_PATH)
         plt.show()
+
+
+def draw_3D_chart(chart_data_time, chart_data_reward, chart_data_action):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(chart_data_time, chart_data_reward,
+               chart_data_action, c='r', marker='o')
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Reward')
+    ax.set_zlabel('Action')
+    plt.show()
+    # save it in a image file
+    ax.figure.savefig('QLearning_chart.png')
 
 
 def main():
